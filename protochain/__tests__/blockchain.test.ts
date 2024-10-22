@@ -11,32 +11,38 @@ describe("Blockchain tests", () => {
 
     test('Should be valid - Genesis', () => {
         const blockchain = new Blockchain();
-        expect(blockchain.isValid()).toEqual(true);
+        expect(blockchain.isValid().success).toEqual(true);
     })
 
     test('Should be valid - Two blocks', () => {
         const blockchain = new Blockchain();
         const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
-        expect(blockchain.isValid()).toEqual(true);
+        expect(blockchain.isValid().success).toEqual(true);
     })
 
     test('Should be add Block', () => {
         const blockchain = new Blockchain();
         const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
-        expect(result).toEqual(true);
+        expect(result.success).toEqual(true);
     })
 
     test('Should not add Block', () => {
         const blockchain = new Blockchain();
         const block = new Block(-1, blockchain.blocks[0].hash, "AA");
         const result = blockchain.addBlock(block);
-        expect(result).toEqual(false);
+        expect(result.success).toEqual(false);
     })
 
     test('Should not be valid', () => {
         const blockchain = new Blockchain();
         blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
         blockchain.blocks[1].data = "BB"; 
-        expect(blockchain.isValid()).toEqual(false);
+        expect(blockchain.isValid().success).toEqual(false);
+    })
+
+    test('Should get Block', () => {
+        const blockchain = new Blockchain();
+        const block = blockchain.getBlock(blockchain.blocks[0].hash);
+        expect(block).toBeTruthy();
     })
 })
