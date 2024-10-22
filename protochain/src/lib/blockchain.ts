@@ -12,7 +12,9 @@ export default class Blockchain {
      * Create Block Genesis
      */
     constructor() {
-        this.blocks = [new Block(this.nextIndex, "" , "Genesis")];
+        this.blocks = [new Block({
+            data : "Genesis"
+        } as Block) ];
         this.nextIndex++;
     }
 
@@ -29,7 +31,7 @@ export default class Blockchain {
         const validation = block.isValid(lastBlock.hash, lastBlock.index);
 
         if(!validation.success) 
-            return new Validation(false, `Invalid Block ${validation.message}`);
+            return new Validation(false, `Invalid Block: ${validation.message}`);
 
         this.blocks.push(block);
         this.nextIndex++;

@@ -7,6 +7,7 @@ describe("Blockchain tests", () => {
     test('Should has genesis block', () => {
         const blockchain = new Blockchain();
         expect(blockchain.blocks.length).toEqual(1);
+        expect(blockchain.isValid().success).toBeTruthy();
     })
 
     test('Should be valid - Genesis', () => {
@@ -16,26 +17,42 @@ describe("Blockchain tests", () => {
 
     test('Should be valid - Two blocks', () => {
         const blockchain = new Blockchain();
-        const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
-        expect(blockchain.isValid().success).toEqual(true);
+        const result = blockchain.addBlock(new Block({
+            index: 1, 
+            previousHash: blockchain.blocks[0].hash, 
+            data: "AA"
+        } as Block));
+        expect(result.success).toEqual(true);
     })
 
     test('Should be add Block', () => {
         const blockchain = new Blockchain();
-        const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
+        const result = blockchain.addBlock(new Block({
+            index: 1, 
+            previousHash: blockchain.blocks[0].hash, 
+            data: "AA"
+        } as Block));
         expect(result.success).toEqual(true);
     })
 
     test('Should not add Block', () => {
         const blockchain = new Blockchain();
-        const block = new Block(-1, blockchain.blocks[0].hash, "AA");
+        const block = new Block({
+            index: -1, 
+            previousHash: blockchain.blocks[0].hash, 
+            data: "AA"
+        } as Block);
         const result = blockchain.addBlock(block);
         expect(result.success).toEqual(false);
     })
 
     test('Should not be valid', () => {
         const blockchain = new Blockchain();
-        blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "AA"));
+        blockchain.addBlock(new Block({
+            index: 1, 
+            previousHash: blockchain.blocks[0].hash, 
+            data: "AA"
+        } as Block));
         blockchain.blocks[1].data = "BB"; 
         expect(blockchain.isValid().success).toEqual(false);
     })
