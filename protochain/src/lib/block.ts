@@ -1,6 +1,9 @@
 import sha256 from 'crypto-js/sha256';
 import Validation from './validation';
 
+/**
+ * Block class
+ */
 export default class Block {
     index : number;
     timestamp: number;
