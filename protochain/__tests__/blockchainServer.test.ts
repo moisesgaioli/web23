@@ -1,20 +1,10 @@
-import { beforeAll, describe, expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import request from 'supertest';
 import { app } from '../src/server/blockchainServer';
-import Block from '../src/lib/block';
 
-jest.mock('../src/lib/block');
 jest.mock('../src/lib/blockchain');
 
 describe('BlockchainServer Tests', () => {
-
-    let genesisBlock : Block;
-
-    beforeAll(() => {
-        genesisBlock = new Block({
-            data: "Genesis"
-        } as Block);
-    })
 
     test('GET /status', async () => {
         const response = await request(app)
@@ -29,16 +19,18 @@ describe('BlockchainServer Tests', () => {
             .get('/block/0');
         
         expect(response.status).toEqual(200);
+        expect(response.body.index).toEqual(0);
     })
 
     test('GET /block/:indexOrHash - Hash', async () => {
         const response = await request(app)
-            .get(`/block/${genesisBlock.hash}`);
+            .get(`/block/HASH`);
         
         expect(response.status).toEqual(200);
+        expect(response.body.hash).toEqual("HASH");
     })
 
-    test('GET /block/:indexOrHash - Not found', async () => {
+    test('GET /block/:indexOrHash - Not found block', async () => {
         const response = await request(app)
             .get('/block/1');
         
@@ -49,7 +41,7 @@ describe('BlockchainServer Tests', () => {
         const body = {
             index: 1,
             data: "AA",
-            previousHash: genesisBlock.hash,
+            previousHash: "HASH",
             hash: ""
         }
 
@@ -58,13 +50,14 @@ describe('BlockchainServer Tests', () => {
             .send(body);
         
         expect(response.status).toEqual(201);
+        expect(response.body.index).toEqual(1);
     })
 
     test('POST /block - Create invalid Block', async () => {
         const body = {
             index: -1,
             data: "AA",
-            previousHash: genesisBlock.hash,
+            previousHash: "HASH",
             hash: ""
         }
 
@@ -73,5 +66,19 @@ describe('BlockchainServer Tests', () => {
             .send(body);
         
         expect(response.status).toEqual(400);
+    })
+
+    test('POST /block - Create invalid Block - Empty hash', async () => {
+        const body = {
+            index: 1,
+            data: "AA",
+            previousHash: "HASH"
+        }
+
+        const response = await request(app)
+            .post('/block')
+            .send(body);
+        
+        expect(response.status).toEqual(422);
     })
 })

@@ -48,10 +48,7 @@ app.post('/block', (req, res, next) => {
         res.status(400).json(validation)
 });
 
-if (process.argv.includes("--run")) {
-    app.listen(PORT, () => {
-        console.log("Online")
-    });
-}
+if (process.argv.includes("--run")) 
+    app.listen(PORT, () => { console.log("Online") });
 
 export { app }
