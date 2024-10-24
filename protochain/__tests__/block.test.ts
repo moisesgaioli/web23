@@ -4,6 +4,8 @@ import Block from '../src/lib/block';
 describe("Block tests", () => {
 
     let genesisBlock : Block;
+    const difficulty = 0;
+    const minerWallet = "MINER";
 
     beforeAll(() => {
         genesisBlock = new Block({
@@ -17,13 +19,15 @@ describe("Block tests", () => {
             previousHash: genesisBlock.hash, 
             data: "A"
         } as Block);
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        block.mine(difficulty, minerWallet);
+        console.log(block);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toEqual(true);
     })
 
     test('Should not be valid - Fallbacks', () => {
         const block = new Block();
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toEqual(false);
         expect(valid.message).toEqual("Invalid index");
     })
@@ -34,8 +38,9 @@ describe("Block tests", () => {
             previousHash: genesisBlock.hash, 
             data: "A"
         } as Block);
+        block.mine(difficulty, minerWallet);
         block.hash = "";
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toBeFalsy();
         expect(valid.message).toEqual("Invalid hash");
     })
@@ -46,7 +51,7 @@ describe("Block tests", () => {
             previousHash: genesisBlock.hash, 
             data: "A"
         } as Block);
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toBeFalsy();
         expect(valid.message).toEqual("Invalid index");
     })
@@ -57,7 +62,7 @@ describe("Block tests", () => {
             previousHash: genesisBlock.hash, 
             data: ""
         } as Block);
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toBeFalsy();
         expect(valid.message).toEqual("Invalid data");
     })
@@ -70,7 +75,7 @@ describe("Block tests", () => {
         } as Block);
         block.timestamp = -1;
         block.hash = block.getHash();
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toBeFalsy();
         expect(valid.message).toEqual("Invalid timestamp");
     })
@@ -81,8 +86,20 @@ describe("Block tests", () => {
             hash: "", 
             data: "A"
         } as Block);
-        const valid = block.isValid(genesisBlock.hash, genesisBlock.index);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
         expect(valid.success).toBeFalsy();
         expect(valid.message).toEqual("Invalid previous hash");
+    })
+
+    test('Should not be valid - No mined', () => {
+        let block = new Block({
+            index: 1, 
+            previousHash: genesisBlock.hash, 
+            hash: "",
+            data: "A"
+        } as Block);
+        const valid = block.isValid(genesisBlock.hash, genesisBlock.index, difficulty);
+        expect(valid.success).toBeFalsy();
+        expect(valid.message).toEqual("No mined");
     })
 })

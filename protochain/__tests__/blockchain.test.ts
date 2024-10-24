@@ -66,4 +66,15 @@ describe("Blockchain tests", () => {
         const block = blockchain.getBlock(blockchain.blocks[0].hash);
         expect(block).toBeTruthy();
     })
+
+    test('Should get next Block infos', () => {
+        const blockchain = new Blockchain();
+        const infos = blockchain.getNextBlock();
+        expect(infos.index).toEqual(1);
+        expect(infos.previousHash).toEqual(blockchain.blocks[0].hash);
+        expect(infos.difficulty).toEqual(1);
+        expect(infos.maxDifficulty).toEqual(62);
+        expect(infos.feePerTx).toEqual(1);
+        expect(infos.data).toEqual(new Date().toString());
+    })
 })
