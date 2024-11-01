@@ -9,8 +9,15 @@ let coin = 0;
 async function mine() {
     console.log("Start")
     const { data } = await axios.get(`${BLOCKCHAIN_SERVER}/block/next`);
-    const blockInfos = data as BlockInfos;
 
+    if (!data){
+        console.log("No transaction found")
+        return setTimeout(() => {
+            mine();
+        }, 5000)
+    }
+    const blockInfos = data as BlockInfos;
+    
     const newBlock = Block.fromBlockInfos(blockInfos);
 
     console.log("Mineirando bloco ...")

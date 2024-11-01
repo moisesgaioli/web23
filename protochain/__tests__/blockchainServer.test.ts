@@ -45,6 +45,22 @@ describe('BlockchainServer Tests', () => {
         expect(response.status).toEqual(404);
     })
 
+    test('GET /transactions/:hash? - Get by Hash', async () => {
+        const response = await request(app)
+            .get('/transactions/TX');
+        
+        expect(response.status).toEqual(200);
+        expect(response.body.mempoolIndex).toEqual(0);
+    })
+
+    test('GET /transactions/ - Get mempool', async () => {
+        const response = await request(app)
+            .get('/transactions');
+        
+        expect(response.status).toEqual(200);
+        expect(response.body.total).toEqual(0);
+    })
+
     test('POST /block - Create Block', async () => {
         const body = {
             index: 1,
@@ -88,5 +104,45 @@ describe('BlockchainServer Tests', () => {
             .send(body);
         
         expect(response.status).toEqual(422);
+    })
+
+    test('POST /transactions - Create Transaction', async () => {
+        const body = {
+            data: "Transaction 1",
+            hash: ""
+        }
+
+        const response = await request(app)
+            .post('/transactions')
+            .send(body);
+        
+        expect(response.status).toEqual(201);
+        expect(response.body.data).toEqual("Transaction 1");
+    })
+
+    test('POST /transactions - Create invalid Transaction - Empty hash', async () => {
+        const body = {
+            data: "Transaction"
+        }
+
+        const response = await request(app)
+            .post('/transactions')
+            .send(body);
+        
+        expect(response.status).toEqual(422);
+    })
+
+    test('POST /transactions - Create invalid Transaction - Empty data', async () => {
+        const body = {
+            data: "",
+            hash: ""
+        }
+
+        const response = await request(app)
+            .post('/transactions')
+            .send(body);
+        
+        expect(response.status).toEqual(400);
+        expect(response.body.success).toEqual(false);
     })
 })

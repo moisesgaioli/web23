@@ -1,3 +1,5 @@
+import Transaction from "./transaction";
+
 /**
  * The information to make mining possible
  */
@@ -7,5 +9,5 @@ export default interface BlockInfos {
     difficulty: number;
     maxDifficulty : number;
     feePerTx: number;
-    data: string;
+    transactions: Transaction[];
 }
